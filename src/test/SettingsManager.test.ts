@@ -5,6 +5,7 @@ import {
   SettingsError,
 } from "../core/types";
 import { SettingsManager } from "../core/SettingsManager";
+import JSON5 from "json5";
 
 class MockFileSystem implements ISettingsFileSystem {
   private files: Map<string, string> = new Map();
@@ -83,7 +84,7 @@ suite("SettingsManager Test Suite", () => {
       assert.ok(error instanceof SettingsError);
       assert.strictEqual(
         (error as SettingsError).message,
-        "test.json はすでに存在します"
+        "test.json はすでに存在します",
       );
     }
   });
@@ -92,17 +93,17 @@ suite("SettingsManager Test Suite", () => {
     await fileSystem.writeFile("/settings.json", '{"existing": true}');
     await fileSystem.writeFile(
       "/settings/test1.json",
-      '{"setting1": "value1"}'
+      '{"setting1": "value1"}',
     );
     await fileSystem.writeFile(
       "/settings/test2.json",
-      '{"setting2": "value2"}'
+      '{"setting2": "value2"}',
     );
 
     await settingsManager.mergeSettings();
 
     const mergedContent = fileSystem.getFileContent("/settings.json");
-    const merged = JSON.parse(mergedContent!);
+    const merged = JSON5.parse(mergedContent!);
 
     assert.deepStrictEqual(merged, {
       existing: true,
@@ -118,5 +119,28 @@ suite("SettingsManager Test Suite", () => {
 
     const files = await settingsManager.getSettingsFiles();
     assert.deepStrictEqual(files.sort(), ["test1.json", "test2.json"]);
+  });
+
+  test("現在の設定の内容を取得", async () => {
+    await fileSystem.writeFile("/settings.json", '{"existing": true}');
+    const currentSettings = await settingsManager.getCurrentSettings();
+    assert.deepStrictEqual(currentSettings, { existing: true });
+  });
+
+  test("新しい設定の内容を取得", async () => {
+    await fileSystem.writeFile(
+      "/settings/test1.json",
+      '{"setting1": "value1"}',
+    );
+    await fileSystem.writeFile(
+      "/settings/test2.json",
+      '{"setting2": "value2"}',
+    );
+
+    const newSettings = await settingsManager.getNewSettings();
+    assert.deepStrictEqual(newSettings, {
+      setting1: "value1",
+      setting2: "value2",
+    });
   });
 });
