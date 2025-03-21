@@ -9,7 +9,7 @@ import { parse, stringify } from "comment-json";
 export class SettingsManager implements ISettingsManager {
   constructor(
     private readonly fileSystem: ISettingsFileSystem,
-    private readonly pathResolver: IPathResolver
+    private readonly pathResolver: IPathResolver,
   ) {}
 
   async getCurrentSettings(): Promise<Record<string, unknown>> {
@@ -25,7 +25,7 @@ export class SettingsManager implements ISettingsManager {
     } catch (error) {
       throw new SettingsError(
         "settings.jsonの解析に失敗しました",
-        error as Error
+        error as Error,
       );
     }
   }
@@ -33,7 +33,7 @@ export class SettingsManager implements ISettingsManager {
   async getNewSettings(): Promise<Record<string, unknown>> {
     const settingsDir = this.pathResolver.getSettingsDirectory();
     const files = (await this.fileSystem.readDirectory(settingsDir))
-      .filter((file) => file.endsWith(".json"))
+      .filter((file) => ["json", "json5"].some((ext) => file.endsWith(ext)))
       .sort();
 
     let settings = {};
@@ -48,7 +48,7 @@ export class SettingsManager implements ISettingsManager {
       } catch (error) {
         throw new SettingsError(
           `${file}の処理中にエラーが発生しました`,
-          error as Error
+          error as Error,
         );
       }
     }
@@ -94,7 +94,7 @@ export class SettingsManager implements ISettingsManager {
       Object.defineProperty(
         output,
         sym,
-        Object.getOwnPropertyDescriptor(source, sym)!
+        Object.getOwnPropertyDescriptor(source, sym)!,
       );
     });
 
@@ -123,7 +123,7 @@ export class SettingsManager implements ISettingsManager {
       // settings.jsonに書き込む
       await this.fileSystem.writeFile(
         userSettingsPath,
-        stringify(mergedSettings, null, 2)
+        stringify(mergedSettings, null, 2),
       );
     } catch (error) {
       if (error instanceof SettingsError) {
@@ -131,7 +131,7 @@ export class SettingsManager implements ISettingsManager {
       }
       throw new SettingsError(
         "設定のマージ中にエラーが発生しました",
-        error as Error
+        error as Error,
       );
     }
   }
@@ -156,7 +156,7 @@ export class SettingsManager implements ISettingsManager {
 
     await this.fileSystem.writeFile(
       filePath,
-      "{\n  // ここに設定を追加してください\n}"
+      "{\n  // ここに設定を追加してください\n}",
     );
   }
 
@@ -165,7 +165,9 @@ export class SettingsManager implements ISettingsManager {
     await this.fileSystem.createDirectory(settingsDir);
 
     const files = await this.fileSystem.readDirectory(settingsDir);
-    return files.filter((file) => file.endsWith(".json"));
+    return files.filter((file) =>
+      ["json", "json5"].some((ext) => file.endsWith(ext)),
+    );
   }
 
   async extractSettingsToFiles(): Promise<void> {
@@ -219,7 +221,7 @@ export class SettingsManager implements ISettingsManager {
         Object.getOwnPropertySymbols(currentSettings).forEach((sym) => {
           const descriptor = Object.getOwnPropertyDescriptor(
             currentSettings,
-            sym
+            sym,
           );
           if (descriptor) {
             // カテゴリオブジェクトにシンボルプロパティを設定
@@ -236,18 +238,18 @@ export class SettingsManager implements ISettingsManager {
       for (const [category, settings] of Object.entries(categories)) {
         if (Object.keys(settings).length > 0) {
           const filePath = this.pathResolver.getSettingsFilePath(
-            `${category}.json`
+            `${category}.json`,
           );
           await this.fileSystem.writeFile(
             filePath,
-            stringify(settings, null, 2)
+            stringify(settings, null, 2),
           );
         }
       }
     } catch (error) {
       throw new SettingsError(
         "設定の抽出中にエラーが発生しました",
-        error as Error
+        error as Error,
       );
     }
   }
