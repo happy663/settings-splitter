@@ -2,6 +2,7 @@ import * as vscode from "vscode";
 import * as path from "path";
 import * as fs from "fs";
 import * as os from "os";
+import JSON5 from "json5";
 
 class SettingsFileProvider implements vscode.TreeDataProvider<SettingsFile> {
   private _onDidChangeTreeData: vscode.EventEmitter<
@@ -84,7 +85,7 @@ async function mergeSettings(): Promise<void> {
     if (fs.existsSync(userSettingsPath)) {
       try {
         const content = fs.readFileSync(userSettingsPath, "utf8");
-        currentSettings = JSON.parse(content);
+        currentSettings = JSON5.parse(content);
       } catch (parseError: any) {
         throw new Error(
           `settings.jsonの解析に失敗しました: ${
