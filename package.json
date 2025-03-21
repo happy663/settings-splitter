@@ -1,7 +1,7 @@
 {
   "name": "settings-splitter",
   "displayName": "Settings Splitter",
-  "description": "",
+  "description": "Split VSCode settings into multiple files for better organization",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.98.0"
@@ -9,15 +9,38 @@
   "categories": [
     "Other"
   ],
-  "activationEvents": [],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "main": "./dist/extension.js",
   "contributes": {
     "commands": [
       {
-        "command": "settings-splitter.helloWorld",
-        "title": "Hello World"
+        "command": "settings-splitter.mergeSettings",
+        "title": "Merge Settings"
+      },
+      {
+        "command": "settings-splitter.createSettingsFile",
+        "title": "create New Settings File"
       }
-    ]
+    ],
+    "viewsContainers": {
+      "activitybar": [
+        {
+          "id": "settings-splitter",
+          "title": "Settings Splitter",
+          "icon": "$(settings-gear)"
+        }
+      ]
+    },
+    "views": {
+      "settings-splitter": [
+        {
+          "id": "settingsFiles",
+          "name": "設定ファイル"
+        }
+      ]
+    }
   },
   "scripts": {
     "vscode:prepublish": "yarn run package",

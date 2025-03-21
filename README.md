@@ -1,71 +1,58 @@
-# settings-splitter README
+# Settings Splitter
 
-This is the README for your extension "settings-splitter". After writing up a brief description, we recommend including the following sections.
+VSCodeの設定ファイル（settings.json）を複数の小さなファイルに分割して管理するための拡張機能です。
 
-## Features
+## 機能
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+- 設定ファイルを複数の小さなファイルに分割して管理
+- アクティビティバーからの簡単なファイルアクセス
+- スマートマージによる設定の統合
 
-For example if there is an image subfolder under your extension project workspace:
+## 使用方法
 
-\!\[feature X\]\(images/feature-x.png\)
+### 1. 設定ファイルの作成
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+1. アクティビティバーの歯車アイコンをクリック
+2. `+`ボタンをクリックまたはコマンドパレットから「新しい設定ファイルを作成」を選択
+3. ファイル名を入力（例：`editor.json`, `terminal.json`）
 
-## Requirements
+### 2. 設定の編集
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+1. アクティビティバーの歯車アイコンから設定ファイルを選択
+2. JSONファイルを編集
+3. 保存
 
-## Extension Settings
+### 3. 設定の反映
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+以下のいずれかの方法で設定を反映：
 
-For example:
+- コマンドパレットから「設定ファイルをマージ」を選択
+- アクティビティバーの歯車アイコンから「設定ファイルをマージ」を選択
 
-This extension contributes the following settings:
+## 設定ファイルの保存場所
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+設定ファイルは以下のディレクトリに保存されます：
 
-## Known Issues
+- macOS: `~/Library/Application Support/Code/User/settings/`
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+## 動作の仕組み
 
-## Release Notes
+1. 分割された設定ファイルは専用のディレクトリで管理
+2. マージコマンド実行時に全ての設定ファイルを読み込み
+3. アルファベット順に処理し、後のファイルが優先
+4. 統合された設定をVSCodeの`settings.json`に反映
 
-Users appreciate release notes as you update your extension.
+## ヒント
 
-### 1.0.0
+- 設定は目的別にファイルを分けることをお勧めします
+  - `editor.json`: エディタの基本設定
+  - `terminal.json`: ターミナルの設定
+  - `git.json`: Gitの設定
+  - `extensions.json`: 拡張機能の設定
+  - など
 
-Initial release of ...
+## 注意事項
 
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
-
-## Following extension guidelines
-
-Ensure that you've read through the extensions guidelines and follow the best practices for creating your extension.
-
-* [Extension Guidelines](https://code.visualstudio.com/api/references/extension-guidelines)
-
-## Working with Markdown
-
-You can author your README using Visual Studio Code. Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux).
-* Toggle preview (`Shift+Cmd+V` on macOS or `Shift+Ctrl+V` on Windows and Linux).
-* Press `Ctrl+Space` (Windows, Linux, macOS) to see a list of Markdown snippets.
-
-## For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**
+- 設定ファイルは有効なJSONである必要があります
+- マージ時にJSON構文エラーがある場合は処理が中断されます
+- バックアップとして定期的に設定をエクスポートすることをお勧めします
