@@ -1,15 +1,15 @@
-import JSON5 from "json5";
 import {
   ISettingsFileSystem,
   ISettingsManager,
   IPathResolver,
   SettingsError,
 } from "./types";
+import { parse, stringify } from "comment-json";
 
 export class SettingsManager implements ISettingsManager {
   constructor(
     private readonly fileSystem: ISettingsFileSystem,
-    private readonly pathResolver: IPathResolver,
+    private readonly pathResolver: IPathResolver
   ) {}
 
   async getCurrentSettings(): Promise<Record<string, unknown>> {
@@ -19,13 +19,13 @@ export class SettingsManager implements ISettingsManager {
       const exists = await this.fileSystem.exists(userSettingsPath);
       if (exists) {
         const content = await this.fileSystem.readFile(userSettingsPath);
-        return JSON5.parse(content);
+        return parse(content) as Record<string, unknown>;
       }
       return {};
     } catch (error) {
       throw new SettingsError(
         "settings.jsonの解析に失敗しました",
-        error as Error,
+        error as Error
       );
     }
   }
@@ -41,11 +41,11 @@ export class SettingsManager implements ISettingsManager {
       const filePath = this.pathResolver.getSettingsFilePath(file);
       try {
         const content = await this.fileSystem.readFile(filePath);
-        Object.assign(settings, JSON5.parse(content));
+        Object.assign(settings, parse(content));
       } catch (error) {
         throw new SettingsError(
           `${file}の処理中にエラーが発生しました`,
-          error as Error,
+          error as Error
         );
       }
     }
@@ -67,7 +67,7 @@ export class SettingsManager implements ISettingsManager {
       // settings.jsonに書き込む
       await this.fileSystem.writeFile(
         userSettingsPath,
-        JSON.stringify(mergedSettings, null, 2),
+        stringify(mergedSettings, null, 2)
       );
     } catch (error) {
       if (error instanceof SettingsError) {
@@ -75,7 +75,7 @@ export class SettingsManager implements ISettingsManager {
       }
       throw new SettingsError(
         "設定のマージ中にエラーが発生しました",
-        error as Error,
+        error as Error
       );
     }
   }

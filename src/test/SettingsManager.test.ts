@@ -5,7 +5,7 @@ import {
   SettingsError,
 } from "../core/types";
 import { SettingsManager } from "../core/SettingsManager";
-import JSON5 from "json5";
+import { parse, stringify } from "comment-json";
 
 class MockFileSystem implements ISettingsFileSystem {
   private files: Map<string, string> = new Map();
@@ -84,32 +84,54 @@ suite("SettingsManager Test Suite", () => {
       assert.ok(error instanceof SettingsError);
       assert.strictEqual(
         (error as SettingsError).message,
-        "test.json はすでに存在します",
+        "test.json はすでに存在します"
       );
     }
   });
 
-  test("設定ファイルのマージ", async () => {
-    await fileSystem.writeFile("/settings.json", '{"existing": true}');
+  test("コメント付き設定ファイルのマージ", async () => {
+    // コメント付きの元の設定ファイル
+    await fileSystem.writeFile(
+      "/settings.json",
+      `{
+        // 既存の設定
+        "existing": true
+      }`
+    );
+
+    // コメント付きの分割設定ファイル
     await fileSystem.writeFile(
       "/settings/test1.json",
-      '{"setting1": "value1"}',
+      `{
+        // テスト設定1
+        "setting1": "value1"
+      }`
     );
+
     await fileSystem.writeFile(
       "/settings/test2.json",
-      '{"setting2": "value2"}',
+      `{
+        // テスト設定2
+        "setting2": "value2"
+      }`
     );
 
     await settingsManager.mergeSettings();
 
     const mergedContent = fileSystem.getFileContent("/settings.json");
-    const merged = JSON5.parse(mergedContent!);
+    const merged = parse(mergedContent!);
 
+    // コンテンツの検証
     assert.deepStrictEqual(merged, {
       existing: true,
       setting1: "value1",
       setting2: "value2",
     });
+
+    // コメントが保持されていることを確認
+    assert.ok(mergedContent!.includes("// 既存の設定"));
+    assert.ok(mergedContent!.includes("// テスト設定1"));
+    assert.ok(mergedContent!.includes("// テスト設定2"));
   });
 
   test("設定ファイルの一覧取得", async () => {
@@ -121,26 +143,51 @@ suite("SettingsManager Test Suite", () => {
     assert.deepStrictEqual(files.sort(), ["test1.json", "test2.json"]);
   });
 
-  test("現在の設定の内容を取得", async () => {
-    await fileSystem.writeFile("/settings.json", '{"existing": true}');
+  test("コメント付きの現在の設定の内容を取得", async () => {
+    const settingsWithComment = `{
+      // これは重要な設定です
+      "existing": true
+    }`;
+    await fileSystem.writeFile("/settings.json", settingsWithComment);
+
     const currentSettings = await settingsManager.getCurrentSettings();
+    const originalContent = fileSystem.getFileContent("/settings.json");
+
+    // 設定値の検証
     assert.deepStrictEqual(currentSettings, { existing: true });
+
+    // コメントが保持されていることを確認
+    assert.ok(originalContent!.includes("// これは重要な設定です"));
   });
 
-  test("新しい設定の内容を取得", async () => {
+  test("コメント付きの新しい設定の内容を取得", async () => {
     await fileSystem.writeFile(
       "/settings/test1.json",
-      '{"setting1": "value1"}',
+      `{
+        // 設定1の説明
+        "setting1": "value1"
+      }`
     );
     await fileSystem.writeFile(
       "/settings/test2.json",
-      '{"setting2": "value2"}',
+      `{
+        // 設定2の説明
+        "setting2": "value2"
+      }`
     );
 
     const newSettings = await settingsManager.getNewSettings();
+    const test1Content = fileSystem.getFileContent("/settings/test1.json");
+    const test2Content = fileSystem.getFileContent("/settings/test2.json");
+
+    // 設定値の検証
     assert.deepStrictEqual(newSettings, {
       setting1: "value1",
       setting2: "value2",
     });
+
+    // コメントが保持されていることを確認
+    assert.ok(test1Content!.includes("// 設定1の説明"));
+    assert.ok(test2Content!.includes("// 設定2の説明"));
   });
 });
