@@ -26,4 +26,8 @@ export class FileSystem implements ISettingsFileSystem {
   async createDirectory(path: string): Promise<void> {
     await fs.mkdir(path, { recursive: true });
   }
+
+  async deleteFile(path: string): Promise<void> {
+    await fs.unlink(path);
+  }
 }

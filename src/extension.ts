@@ -3,6 +3,7 @@ import { FileSystem } from "./infrastructure/FileSystem";
 import { PathResolver } from "./core/PathResolver";
 import { SettingsManager } from "./core/SettingsManager";
 import { SettingsTreeDataProvider } from "./ui/SettingsTreeDataProvider";
+import { SettingsTreeItem } from "./ui/SettingsTreeItem";
 import { SettingsError } from "./core/types";
 
 export function activate(context: vscode.ExtensionContext) {
@@ -32,6 +33,33 @@ export function activate(context: vscode.ExtensionContext) {
             vscode.window.showErrorMessage(error.message);
           } else {
             vscode.window.showErrorMessage(`エラーが発生しました: ${error}`);
+          }
+        }
+      }
+    )
+  );
+
+  context.subscriptions.push(
+    vscode.commands.registerCommand(
+      "settings-splitter.deleteSettingsFile",
+      async (item: SettingsTreeItem) => {
+        const answer = await vscode.window.showWarningMessage(
+          `${item.label}を削除してもよろしいですか？`,
+          { modal: true },
+          "削除"
+        );
+
+        if (answer === "削除") {
+          try {
+            await settingsManager.deleteSettingsFile(item.label);
+            vscode.window.showInformationMessage(`${item.label}を削除しました`);
+            settingsTreeDataProvider.refresh();
+          } catch (error) {
+            if (error instanceof SettingsError) {
+              vscode.window.showErrorMessage(error.message);
+            } else {
+              vscode.window.showErrorMessage(`エラーが発生しました: ${error}`);
+            }
           }
         }
       }

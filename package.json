@@ -21,7 +21,13 @@
       },
       {
         "command": "settings-splitter.createSettingsFile",
-        "title": "create New Settings File"
+        "title": "新規設定ファイルを作成",
+        "icon": "$(add)"
+      },
+      {
+        "command": "settings-splitter.deleteSettingsFile",
+        "title": "設定ファイルを削除",
+        "icon": "$(trash)"
       }
     ],
     "viewsContainers": {
@@ -38,6 +44,22 @@
         {
           "id": "settingsFiles",
           "name": "設定ファイル"
+        }
+      ]
+    },
+    "menus": {
+      "view/title": [
+        {
+          "command": "settings-splitter.createSettingsFile",
+          "when": "view == settingsFiles",
+          "group": "navigation"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "settings-splitter.deleteSettingsFile",
+          "when": "view == settingsFiles",
+          "group": "inline"
         }
       ]
     }

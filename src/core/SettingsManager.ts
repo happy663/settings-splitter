@@ -169,4 +169,15 @@ export class SettingsManager implements ISettingsManager {
       ["json", "json5"].some((ext) => file.endsWith(ext)),
     );
   }
+
+  async deleteSettingsFile(fileName: string): Promise<void> {
+    const filePath = this.pathResolver.getSettingsFilePath(fileName);
+    const exists = await this.fileSystem.exists(filePath);
+    
+    if (!exists) {
+      throw new SettingsError(`${fileName} は存在しません`);
+    }
+
+    await this.fileSystem.deleteFile(filePath);
+  }
 }

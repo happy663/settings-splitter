@@ -37,6 +37,13 @@ class MockFileSystem implements ISettingsFileSystem {
     // ディレクトリ作成のモックは不要
   }
 
+  async deleteFile(path: string): Promise<void> {
+    if (!this.files.has(path)) {
+      throw new Error(`File not found: ${path}`);
+    }
+    this.files.delete(path);
+  }
+
   // テスト用のヘルパーメソッド
   getFileContent(path: string): string | undefined {
     return this.files.get(path);
@@ -141,6 +148,25 @@ suite("SettingsManager Test Suite", () => {
 
     const files = await settingsManager.getSettingsFiles();
     assert.deepStrictEqual(files.sort(), ["test1.json", "test2.json"]);
+  });
+
+  test("設定ファイルの削除", async () => {
+    await fileSystem.writeFile("/settings/test.json", "{}");
+    await settingsManager.deleteSettingsFile("test.json");
+    assert.strictEqual(await fileSystem.exists("/settings/test.json"), false);
+  });
+
+  test("存在しない設定ファイルの削除時にエラーを投げる", async () => {
+    try {
+      await settingsManager.deleteSettingsFile("notexist.json");
+      assert.fail("エラーが発生すべき");
+    } catch (error: unknown) {
+      assert.ok(error instanceof SettingsError);
+      assert.strictEqual(
+        (error as SettingsError).message,
+        "notexist.json は存在しません"
+      );
+    }
   });
 
   test("コメント付きの現在の設定の内容を取得", async () => {

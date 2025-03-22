@@ -4,11 +4,13 @@ export interface ISettingsFileSystem {
   exists(path: string): Promise<boolean>;
   readDirectory(path: string): Promise<string[]>;
   createDirectory(path: string): Promise<void>;
+  deleteFile(path: string): Promise<void>;
 }
 
 export interface ISettingsManager {
   mergeSettings(): Promise<void>;
   createSettingsFile(fileName: string): Promise<void>;
+  deleteSettingsFile(fileName: string): Promise<void>;
   getSettingsFiles(): Promise<string[]>;
 }
 
