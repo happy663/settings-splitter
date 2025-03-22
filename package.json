@@ -21,12 +21,12 @@
       },
       {
         "command": "settings-splitter.createSettingsFile",
-        "title": "新規設定ファイルを作成",
+        "title": "New Settings File",
         "icon": "$(add)"
       },
       {
         "command": "settings-splitter.deleteSettingsFile",
-        "title": "設定ファイルを削除",
+        "title": "Delete Settings File",
         "icon": "$(trash)"
       }
     ],
