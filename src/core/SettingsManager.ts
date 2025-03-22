@@ -154,10 +154,7 @@ export class SettingsManager implements ISettingsManager {
       throw new SettingsError(`${fileName}.json はすでに存在します`);
     }
 
-    await this.fileSystem.writeFile(
-      filePath,
-      "{\n  // ここに設定を追加してください\n}",
-    );
+    await this.fileSystem.writeFile(filePath, "{\n  \n}");
   }
 
   async getSettingsFiles(): Promise<string[]> {
@@ -173,7 +170,7 @@ export class SettingsManager implements ISettingsManager {
   async deleteSettingsFile(fileName: string): Promise<void> {
     const filePath = this.pathResolver.getSettingsFilePath(fileName);
     const exists = await this.fileSystem.exists(filePath);
-    
+
     if (!exists) {
       throw new SettingsError(`${fileName} は存在しません`);
     }

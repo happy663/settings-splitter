@@ -35,7 +35,7 @@
         {
           "id": "settings-splitter",
           "title": "Settings Splitter",
-          "icon": "$(settings-gear)"
+          "icon": "img/icon/activitybar.svg"
         }
       ]
     },
