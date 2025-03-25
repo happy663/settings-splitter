@@ -33,7 +33,7 @@ export class SettingsManager implements ISettingsManager {
   async getNewSettings(): Promise<Record<string, unknown>> {
     const settingsDir = this.pathResolver.getSettingsDirectory();
     const files = (await this.fileSystem.readDirectory(settingsDir))
-      .filter((file) => ["json", "json5"].some((ext) => file.endsWith(ext)))
+      .filter((file) => ["json", "jsonc"].some((ext) => file.endsWith(ext)))
       .sort();
 
     let settings = {};
@@ -162,9 +162,7 @@ export class SettingsManager implements ISettingsManager {
     await this.fileSystem.createDirectory(settingsDir);
 
     const files = await this.fileSystem.readDirectory(settingsDir);
-    return files.filter((file) =>
-      ["json", "json5"].some((ext) => file.endsWith(ext)),
-    );
+    return files.filter((file) => ["json"].some((ext) => file.endsWith(ext)));
   }
 
   async deleteSettingsFile(fileName: string): Promise<void> {

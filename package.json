@@ -92,7 +92,6 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "comment-json": "^4.2.5",
-    "json5": "^2.2.3"
+    "comment-json": "^4.2.5"
   }
 }
