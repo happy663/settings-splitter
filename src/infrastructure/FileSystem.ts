@@ -3,11 +3,11 @@ import { ISettingsFileSystem } from "../core/types";
 
 export class FileSystem implements ISettingsFileSystem {
   async readFile(path: string): Promise<string> {
-    return fs.readFile(path, 'utf8');
+    return fs.readFile(path, "utf8");
   }
 
   async writeFile(path: string, content: string): Promise<void> {
-    return fs.writeFile(path, content, 'utf8');
+    return fs.writeFile(path, content, "utf8");
   }
 
   async exists(path: string): Promise<boolean> {
