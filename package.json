@@ -62,7 +62,15 @@
           "group": "inline"
         }
       ]
-    }
+    },
+    "jsonValidation": [
+      {
+        "fileMatch": [
+          "**/settings/*.json"
+        ],
+        "url": "vscode://schemas/settings/user"
+      }
+    ]
   },
   "scripts": {
     "vscode:prepublish": "yarn run package",
